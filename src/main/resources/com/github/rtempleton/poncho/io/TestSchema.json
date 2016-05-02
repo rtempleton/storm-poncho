@@ -1,0 +1,8 @@
+[{"name":"intCol1", "type":"INTEGER"},
+{"name":"intCol2", "type":"INTEGER", "format":"###,###.###"},
+{"name":"stringCol3", "type":"STRING"},
+{"name":"floatCol4", "type":"FLOAT"},
+{"name":"floatCol5", "type":"FLOAT", "format":"###,###.###"},
+{"name":"tsCol6", "type":"TIMESTAMP"},
+{"name":"txCol7", "type":"TIMESTAMP", "format":"dd-MM-yyyy HH:mm:ss.S"}
+]
