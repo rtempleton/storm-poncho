@@ -25,15 +25,16 @@ public class TextFileProducer {
 			USAGE();
 		}
 		
-		int recLimit = Integer.MAX_VALUE;
-		if(args.length==3)
-			recLimit=Integer.parseInt(args[2]);
-		
-		TextFileProducer prod = new TextFileProducer(args[0], args[1], recLimit);
+		TextFileProducer prod = new TextFileProducer(args[0], args[1]);
 		prod.run();
 	}
-		
-	public TextFileProducer(String propsFile, String sourceFile, int recLimit){
+	
+	/**
+	 * 
+	 * @param propsFile
+	 * @param sourceFile
+	 */
+	public TextFileProducer(String propsFile, String sourceFile){
 		Properties props = new Properties();
 		try {
 			props.load(new FileInputStream(propsFile));
@@ -42,7 +43,7 @@ public class TextFileProducer {
 			System.exit(1);
 		}
 
-		topic = StormUtils.getExpectedProperty(props, "kafka.topic");
+		topic = StormUtils.getRequiredProperty(props, "kafka.topic");
 		this.sourceFile = sourceFile;
 		producer = new KafkaProducer<String, String>(props);		
 	}
@@ -51,11 +52,14 @@ public class TextFileProducer {
 		logger.error("TestFileProducer requires two arguments to run:");
 		logger.error("\t Path to a configuration file for Kafka");
 		logger.error("\t Path to a source file to be written to Kafka");
-		logger.error("\t (optional) the max number of records to be loaded");
+//		logger.error("\t (optional) the max number of records to be loaded");
 		System.exit(-1);
 	}
 	
 	
+	/**
+	 * Executes the producer to load data from the source file to the Kafaka queue specified in the configuration
+	 */
 	public void run() {
 		int cntr = 0;
 		

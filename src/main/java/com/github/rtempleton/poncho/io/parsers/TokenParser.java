@@ -1,6 +1,8 @@
 package com.github.rtempleton.poncho.io.parsers;
 
-public interface TokenParser {
+import java.io.Serializable;
+
+public interface TokenParser extends Serializable{
 	
 	public Object parse(String token);
 	

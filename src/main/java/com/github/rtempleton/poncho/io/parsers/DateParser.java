@@ -1,26 +1,33 @@
 package com.github.rtempleton.poncho.io.parsers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.chrono.ISOChronology;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class DateParser implements TokenParser {
 	
+	private static final long serialVersionUID = 1L;
 	private final static Logger logger = Logger.getLogger(DateParser.class);
 	private final static String DEFAULT_FORMAT = "yyyy-MM-dd";
-	final SimpleDateFormat sdf;
+	private final DateTimeFormatter dtf;
+	private final String name;
 	
-	public DateParser(String simpleDateFormat){
-		sdf = (simpleDateFormat==null || simpleDateFormat.isEmpty()) ? new SimpleDateFormat(DEFAULT_FORMAT) : new SimpleDateFormat(simpleDateFormat);
+	public DateParser(String name, String simpleDateFormat){
+		String format = (simpleDateFormat==null || simpleDateFormat.isEmpty()) ? DEFAULT_FORMAT : simpleDateFormat;
+		dtf = DateTimeFormat.forPattern(format).withOffsetParsed().withPivotYear(2000).withChronology(ISOChronology.getInstance());
+		this.name=name;
 	}
 
 	public Object parse(String token) {
 		try {
-			return sdf.parse(token);
-		} catch (ParseException e) {
+			DateTime dt = dtf.parseDateTime(token.trim());
+			return new LocalDate(dt.getYear(), dt.getMonthOfYear(), dt.getDayOfMonth());
+		} catch (Exception e) {
 			logger.warn(e.getMessage());
-			logger.warn(String.format("Error parsing token %s. Pushing null instead.", token));
+			logger.warn(String.format("Error parsing token %s at field %s. Pushing null instead.", token, name));
 			return null;
 		}
 	}

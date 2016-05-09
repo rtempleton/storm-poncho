@@ -1,16 +1,20 @@
 package com.github.rtempleton.poncho;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import backtype.storm.Config;
+import backtype.storm.LocalCluster;
 import backtype.storm.spout.Scheme;
 import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.topology.FailedException;
 import backtype.storm.topology.IComponent;
 import backtype.storm.topology.OutputFieldsGetter;
+import backtype.storm.topology.TopologyBuilder;
 import storm.kafka.BrokerHosts;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
@@ -19,6 +23,18 @@ import storm.kafka.ZkHosts;
 public class StormUtils {
 
 	private static final Logger logger = Logger.getLogger(StormUtils.class);
+	
+	
+	public static Properties readProperties(String propsPath){
+		Properties topologyConfig = new Properties();
+		try {
+			topologyConfig.load(new FileInputStream(propsPath));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return topologyConfig;
+	}
 	
 
 	/**
@@ -59,10 +75,10 @@ public class StormUtils {
 	 */
 	public static KafkaSpout getKafkaSpout(Properties props, Scheme schema){
 		
-		String zkHosts = StormUtils.getExpectedProperty(props, "kafka.zookeeper.host.port");
-		String topic = StormUtils.getExpectedProperty(props, "kafka.topic");
-		String zkRoot = StormUtils.getExpectedProperty(props, "kafka.zkRoot");
-		String consumerGroupId = StormUtils.getExpectedProperty(props, "kafka.consumer.group.id");
+		String zkHosts = StormUtils.getRequiredProperty(props, "kafka.zookeeper.host.port");
+		String topic = StormUtils.getRequiredProperty(props, "kafka.topic");
+		String zkRoot = StormUtils.getRequiredProperty(props, "kafka.zkRoot");
+		String consumerGroupId = StormUtils.getRequiredProperty(props, "kafka.consumer.group.id");
 		
 		
 		BrokerHosts hosts = new ZkHosts(zkHosts);
@@ -83,11 +99,13 @@ public class StormUtils {
 		return new KafkaSpout(spoutConfig);
 	}
 
-	public static String getExpectedProperty(Properties props, String name){
+	
+	public static String getRequiredProperty(Properties props, String name){
 		if(!props.containsKey(name)){
-			logger.error(String.format("The expected property %s was not found in your configuration file. Please check the value and try again.", name));
+			logger.error(String.format("The required property %s was not found in your configuration file. Please check the value and try again.", name));
+			System.exit(-1);
 		}
-		return props.getProperty(name, null);
+		return props.getProperty(name);
 	}
 	
 	
@@ -103,6 +121,20 @@ public class StormUtils {
 //		conf.set("hbase.master", StormUtils.getExpectedProperty(props, "hbase.master"));
 //		return conf;
 //	}
+	
+	/**
+	 * Callable by Junit for testing
+	 * @param builder
+	 * @return
+	 */
+	public static LocalCluster testSubmit(TopologyBuilder builder){
+		Config conf = new Config();
+//		conf.registerSerialization(PositionReportOp.TollNotification.class);
+
+		LocalCluster cluster = new LocalCluster();
+		cluster.submitTopology(builder.toString(), conf, builder.createTopology());
+		return cluster;
+	}
 	
 
 }

@@ -41,5 +41,15 @@
   		<artifactId>kafka-clients</artifactId>
   		<version>0.9.0.1</version>
   	</dependency>
+  	<dependency>
+  		<groupId>joda-time</groupId>
+  		<artifactId>joda-time</artifactId>
+  		<version>2.9.3</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.storm</groupId>
+  		<artifactId>storm-hdfs</artifactId>
+  		<version>${StormVersion}</version>
+  	</dependency>
   </dependencies>
 </project>

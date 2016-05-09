@@ -1,13 +1,14 @@
 package com.github.rtempleton.poncho.io;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-public class RecordSchema{
+public class RecordSchema implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(RecordSchema.class);
 	
 	final List<RecordField> fields;

@@ -1,8 +1,10 @@
-[{"name":"intCol1", "type":"INTEGER"},
-{"name":"intCol2", "type":"INTEGER", "format":"###,###.###"},
-{"name":"stringCol3", "type":"STRING"},
-{"name":"floatCol4", "type":"FLOAT"},
-{"name":"floatCol5", "type":"FLOAT", "format":"###,###.###"},
-{"name":"tsCol6", "type":"TIMESTAMP"},
-{"name":"txCol7", "type":"TIMESTAMP", "format":"dd-MM-yyyy HH:mm:ss.S"}
+[
+{"name":"timestampCol", "type":"TIMESTAMP", "format":"yyyy-MM-dd'T'HH:mm:ssZ"},
+{"name":"intCol", "type":"INTEGER"},
+{"name":"stringCol", "type":"STRING"},
+{"name":"DoubleCol1", "type":"DOUBLE"},
+{"name":"currencyCol", "type":"FLOAT", "format":"$#.##"},
+{"name":"TimeOfDay", "type":"TIME"},
+{"name":"USFormattedDate", "type":"DATE", "format":"MM/dd/yyyy"},
+{"name":"DoubleCol2", "type":"DOUBLE", "format":"###,###.###"}
 ]

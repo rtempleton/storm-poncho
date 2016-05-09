@@ -2,7 +2,6 @@ package com.github.rtempleton.poncho.io;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,17 +15,18 @@ public class SchemaUtil {
 	private static final Logger logger = Logger.getLogger(SchemaUtil.class);
 	
 	
-	public static RecordSchema readRecordSchema(String schemaPath) throws IOException{
+	public static RecordSchema readRecordSchema(String schemaPath){
 		
-		BufferedReader br = new BufferedReader(new FileReader(schemaPath));
-		StringBuffer sb = new StringBuffer();
-		for (String line; (line = br.readLine()) != null;) {
-			sb.append(line);
-		}
-		br.close();
-		
-		ObjectMapper mapper = new ObjectMapper();
 		try{
+			BufferedReader br = new BufferedReader(new FileReader(schemaPath));
+			StringBuffer sb = new StringBuffer();
+			for (String line; (line = br.readLine()) != null;) {
+				sb.append(line);
+			}
+			br.close();
+			
+			ObjectMapper mapper = new ObjectMapper();
+		
 			List<RecordField> foo = mapper.readValue(sb.toString(), new TypeReference<List<RecordField>>() {});
 			return new RecordSchema(foo);
 		}catch(Exception e){
@@ -42,8 +42,11 @@ public class SchemaUtil {
 	 * the DelimtedTextScheme
 	 */
 	public static List<String> parseSelectFields(String selectFields){
-		return new ArrayList<String>(Arrays.asList(selectFields.split(",")));
-		
+		List<String> fields = new ArrayList<String>(Arrays.asList(selectFields.split(",")));
+		for(String field : fields){
+			field.trim();
+		}
+		return fields;
 	}
 	
 	
