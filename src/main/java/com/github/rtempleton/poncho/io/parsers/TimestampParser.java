@@ -12,11 +12,17 @@ public class TimestampParser implements TokenParser {
 	private final static String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	private final DateTimeFormatter dtf;
 	private final String name;
+	private Object nullValue;
 	
-	public TimestampParser(String name, String simpleDateFormat) {
+	public TimestampParser(String name, String simpleDateFormat, String nullVal) {
 		String format = (simpleDateFormat==null || simpleDateFormat.isEmpty()) ? DEFAULT_FORMAT : simpleDateFormat;
 		dtf = DateTimeFormat.forPattern(format).withOffsetParsed().withPivotYear(2000).withChronology(ISOChronology.getInstance());
 		this.name=name;
+		try {
+			nullValue = (nullVal == null || nullVal.isEmpty()) ? null : dtf.parseDateTime(nullVal.trim());
+		} catch (Exception e) {
+			nullValue = null;
+		}
 		
 	}
 
@@ -26,8 +32,8 @@ public class TimestampParser implements TokenParser {
 				return dtf.parseDateTime(token.trim());
 			}catch(Exception e){
 				logger.warn(e.getMessage());
-				logger.warn(String.format("Error parsing token %s at field %s. Pushing null instead.", token, name));
-				return null;
+				logger.warn(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
+				return nullValue;
 			}
 		}
 		return null;

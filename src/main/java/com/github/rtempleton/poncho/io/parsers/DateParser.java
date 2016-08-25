@@ -14,10 +14,21 @@ public class DateParser implements TokenParser {
 	private final static String DEFAULT_FORMAT = "yyyy-MM-dd";
 	private final DateTimeFormatter dtf;
 	private final String name;
+	private Object nullValue;
 	
-	public DateParser(String name, String simpleDateFormat){
+	public DateParser(String name, String simpleDateFormat, String nullVal){
 		String format = (simpleDateFormat==null || simpleDateFormat.isEmpty()) ? DEFAULT_FORMAT : simpleDateFormat;
 		dtf = DateTimeFormat.forPattern(format).withOffsetParsed().withPivotYear(2000).withChronology(ISOChronology.getInstance());
+		if(nullVal == null || nullVal.isEmpty())
+			nullValue = null;
+		else{
+			try {
+				DateTime dt = dtf.parseDateTime(nullVal.trim());
+				nullValue = new LocalDate(dt.getYear(), dt.getMonthOfYear(), dt.getDayOfMonth());
+			} catch (Exception e) {
+				nullValue = null;
+			}
+		}
 		this.name=name;
 	}
 
@@ -27,8 +38,8 @@ public class DateParser implements TokenParser {
 			return new LocalDate(dt.getYear(), dt.getMonthOfYear(), dt.getDayOfMonth());
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
-			logger.warn(String.format("Error parsing token %s at field %s. Pushing null instead.", token, name));
-			return null;
+			logger.warn(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
+			return nullValue;
 		}
 	}
 

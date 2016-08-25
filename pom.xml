@@ -6,9 +6,9 @@
   <name>Poncho</name>
   <description>A collection of utilities for Apache Storm</description>
   <properties>
-  	<maven.compiler.source>1.8</maven.compiler.source>
-  	<maven.compiler.target>1.8</maven.compiler.target>
-  	<StormVersion>0.10.0</StormVersion>
+  	<maven.compiler.source>1.7</maven.compiler.source>
+  	<maven.compiler.target>1.7</maven.compiler.target>
+  	<StormVersion>1.0.1</StormVersion>
   </properties>
   <dependencies>
   	<dependency>

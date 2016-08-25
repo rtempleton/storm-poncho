@@ -36,7 +36,7 @@ public class SchemaGenerator {
 	protected void generateDelimitedTextSchema(int size, String path) throws JsonGenerationException, JsonMappingException, IOException{
 		List<RecordField> fields = new ArrayList<RecordField>(size);
 		for(int i=0; i<size; i++){
-			fields.add(new RecordField("col" + (i+1), TokenType.STRING, ""));
+			fields.add(new RecordField("col" + (i+1), TokenType.STRING, "", ""));
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();

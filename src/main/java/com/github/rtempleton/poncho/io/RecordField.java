@@ -15,13 +15,14 @@ import com.github.rtempleton.poncho.io.parsers.TimeParser;
 import com.github.rtempleton.poncho.io.parsers.TimestampParser;
 import com.github.rtempleton.poncho.io.parsers.TokenParser;
 
-@JsonPropertyOrder({ "name", "type", "format" })
+@JsonPropertyOrder({ "name", "type", "format", "nullVal" })
 public class RecordField implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	public String name;
 	public TokenType type;
 	public String format;
+	public String nullVal;
 	
 	public enum TokenType{
 		STRING, INTEGER, LONG, FLOAT, DOUBLE, DATE, TIME, TIMESTAMP
@@ -32,10 +33,11 @@ public class RecordField implements Serializable{
 	 * @param name
 	 * @param type
 	 */
-	protected RecordField(String name, TokenType type, String format){
+	protected RecordField(String name, TokenType type, String format, String nullVal){
 		this.name=name;
 		this.type=type;
 		this.format=format;
+		this.nullVal=nullVal;
 	}
 	
 	public RecordField(){
@@ -44,36 +46,36 @@ public class RecordField implements Serializable{
 	
 	@JsonIgnore
 	public TokenParser getParser(){
-		return createParser(name, type, format);
+		return createParser(name, type, format, nullVal);
 	}
 	
 	
-	private static TokenParser createParser(String name, TokenType type, String format){
+	private static TokenParser createParser(String name, TokenType type, String format, String nullVal){
 		switch (type){
 		
 		case STRING :
-			return new StringParser(name);
+			return new StringParser(name, nullVal);
 			
 		case INTEGER :
-			return new IntParser(name, format);
+			return new IntParser(name, format, nullVal);
 			
 		case LONG :
-			return new LongParser(name, format);
+			return new LongParser(name, format, nullVal);
 		
 		case FLOAT :
-			return new FloatParser(name, format);
+			return new FloatParser(name, format, nullVal);
 			
 		case DOUBLE :
-			return new DoubleParser(name, format);
+			return new DoubleParser(name, format, nullVal);
 			
 		case TIMESTAMP :
-			return new TimestampParser(name, format);
+			return new TimestampParser(name, format, nullVal);
 			
 		case DATE :
-			return new DateParser(name, format);
+			return new DateParser(name, format, nullVal);
 			
 		case TIME :
-			return new TimeParser(name, format);
+			return new TimeParser(name, format, nullVal);
 		}
 		return null;
 	}
@@ -100,6 +102,14 @@ public class RecordField implements Serializable{
 
 	public void setFormat(String format) {
 		this.format = format;
+	}
+	
+	public String getNullVal(){
+		return this.nullVal;
+	}
+	
+	public void setNullVal(String nullVal){
+		this.nullVal=nullVal;
 	}
 	
 	

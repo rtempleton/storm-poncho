@@ -30,7 +30,7 @@ public class TextFileProducer {
 	}
 	
 	/**
-	 * 
+	 * Load CSV data into a kafka queue
 	 * @param propsFile
 	 * @param sourceFile
 	 */
