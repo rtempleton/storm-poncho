@@ -9,7 +9,7 @@ An externally callable utility to load data from a source text file line by line
 
 c.g.r.poncho.io.ParseDelimitedTextBolt
 ---
-I wanted to provide a way to externally define the schema of the records being read off the Kafka queue and pass that schema as a parameter to the Bolt that is doing the record parsing. From the schema, the bolt will understand the record layout and confiugre the underlying parsers to correctly interpret the record. This bolt will immediately follow a KafkaSpout which implements a "RawScheme"
+I wanted to provide a way to externally define the schema of the records being read off the Kafka queue and pass that schema as a parameter to the Bolt that is doing the record parsing. From the schema, the bolt will understand the record layout and configure the underlying parsers to correctly interpret the record. This bolt will immediately follow a KafkaSpout which implements a "RawScheme".
 
 Current supported data types are:
 
@@ -18,6 +18,7 @@ Current supported data types are:
 * Float, Double - take optional formatting arguments that align to [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html)
 * Timestamp, Date, Time - take optional formatting arguments that align to [SimpleDateFormat](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html). Are backed by Joda [DateTime](http://www.joda.org/joda-time/apidocs/org/joda/time/DateTime.html), [LocalDate](http://www.joda.org/joda-time/apidocs/org/joda/time/LocalDate.html) and [LocalTime](http://www.joda.org/joda-time/apidocs/org/joda/time/LocalTime.html) Classes respectively. 
 
+**NEW FEATURE** - You can optionally provide a "nullValue" attribute to a given column to specify the field value you would like the parser to inject in the event the source field value is blank. The values are expressed is always expressed as a String and will be converted by the Bolt during configuration. If no value is specified it will default to blank values for String data types and *null* for all other types.
 
 sample schema
 
@@ -25,9 +26,9 @@ sample schema
         {"name":"intCol1", "type":"INTEGER"},
         {"name":"intCol2", "type":"INTEGER", "format":"###,###.###"},
         {"name":"stringCol3", "type":"STRING"},
-        {"name":"floatCol4", "type":"FLOAT"},
+        {"name":"floatCol4", "type":"FLOAT", "nullValue" : "-1"},
         {"name":"floatCol5", "type":"FLOAT", "format":"###,###.###"},
-        {"name":"tsCol6", "type":"TIMESTAMP"},
+        {"name":"tsCol6", "type":"TIMESTAMP", "nullValue" : "1999-12-31 11:59:59"},
         {"name":"txCol7", "type":"TIMESTAMP", "format":"dd-MM-yyyy HH:mm:ss.S"}
     ]
 
@@ -86,3 +87,11 @@ Generates a boiler plate schema. Simply pass in the number of fields you will re
 c.g.r.poncho.io.SimpleHDFSWriter
 ---
 Wrapper class for HdfsBolt that simplifies configuration. Handy for unit testing.
+
+c.g.r.poncho.io.ConsoleLoggerBolt
+---
+Simple bolt logs output to console. Good for development tests.
+
+c.g.r.poncho.SelectFieldsBolt
+---
+Bolt used to control which fields will be emitted in the output Tuple. Will provide SelectType enum and a list of fields to either RETAIN or REMOVE from list of input fields.
