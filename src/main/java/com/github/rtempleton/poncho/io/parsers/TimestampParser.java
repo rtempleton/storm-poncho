@@ -29,10 +29,11 @@ public class TimestampParser implements TokenParser {
 	public Object parse(String token) {
 		if(token.length()>0){
 			try{
+				if(token.trim().length()==0)
+					return nullValue;
 				return dtf.parseDateTime(token.trim());
 			}catch(Exception e){
-				logger.warn(e.getMessage());
-				logger.warn(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
+				logger.debug(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
 				return nullValue;
 			}
 		}

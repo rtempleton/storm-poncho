@@ -84,10 +84,9 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 		try{
 			String rec = new String(input.getBinary(0), charsetName);
 			collector.emit(doProcess(rec));
-		}catch(UnsupportedEncodingException e){
+		}catch(Exception e){
 			//TODO - create stream for records that weren't able to be decoded and push bad tuples there for potential inspection
 			logger.error("Parsing Error - Skipping Message");
-			logger.error(e.getMessage());
 		}
 		collector.ack(input);
 		
@@ -98,14 +97,22 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 	 * @param input
 	 * @return
 	 */
-	protected Values doProcess(String input){
+	protected Values doProcess(String input) throws Exception{
 		Values vals = new Values();
+		
 		String[] rec = input.split(delimiter);
 		for(int i=0;i<parsers.size();i++){
 			//get the position of the input field from the mapping list
 			int inPos = mapping.get(i);
+			try{
 			vals.add(parsers.get(i).parse(rec[inPos]));
+			}catch(Exception e){
+				logger.error("Parse error source: " + input);
+				logger.error("Parser: " + i);
+				throw e;
+			}
 		}
+		
 		return vals;
 	}
 

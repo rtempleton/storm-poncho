@@ -16,7 +16,7 @@ public class StringParser implements TokenParser {
 
 	public Object parse(String token) {
 		if (token.trim().isEmpty()){
-			logger.warn(String.format("Empty token at field %s. Pushing \"%s\" instead.", name, nullValue));
+			logger.debug(String.format("Empty token at field %s. Pushing \"%s\" instead.", name, nullValue));
 			return nullValue;
 		}
 		return token.trim();

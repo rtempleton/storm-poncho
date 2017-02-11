@@ -29,10 +29,11 @@ public class IntParser implements TokenParser {
 
 	public Object parse(String token) {
 		try{
+			if(token.trim().length()==0)
+				return nullValue;
 			return (Integer)df.parse(token.trim()).intValue();
 		}catch(Exception e){
-			logger.warn(e.getMessage());
-			logger.warn(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
+			logger.debug(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
 			return nullValue;
 		}
 	}

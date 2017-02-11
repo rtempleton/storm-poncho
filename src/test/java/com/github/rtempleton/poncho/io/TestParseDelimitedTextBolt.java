@@ -42,11 +42,16 @@ public class TestParseDelimitedTextBolt extends AbstractTestCase {
 		BufferedReader br = new BufferedReader(new FileReader(testFilePath));
 		for (String line; (line = br.readLine()) != null;) {
 			StringBuffer buf = new StringBuffer();
-			List<Object> parsed = b.doProcess(line);
-			for (Object o : parsed){
-				buf.append(o + " ");
+			try{
+				List<Object> parsed = b.doProcess(line);
+				for (Object o : parsed){
+					buf.append(o + " ");
+				}
+				logger.info(buf.toString());
+			}catch(Exception e){
+				logger.error("parsing error - skip message");
 			}
-			logger.info(buf.toString());
+			
 			
 		}
 		br.close();
@@ -79,11 +84,15 @@ public class TestParseDelimitedTextBolt extends AbstractTestCase {
 		BufferedReader br = new BufferedReader(new FileReader(testFilePath));
 		for (String line; (line = br.readLine()) != null;) {
 			StringBuffer buf = new StringBuffer();
-			List<Object> parsed = b.doProcess(line);
-			for (Object o : parsed){
-				buf.append(o + " ");
+			try{
+				List<Object> parsed = b.doProcess(line);
+				for (Object o : parsed){
+					buf.append(o + " ");
+				}
+				logger.info(buf.toString());
+			}catch(Exception e){
+				logger.error("parsing error - skip message");
 			}
-			logger.info(buf.toString());
 		}
 		br.close();
 	}
