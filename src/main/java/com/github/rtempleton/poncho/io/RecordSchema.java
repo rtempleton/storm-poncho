@@ -24,7 +24,7 @@ public class RecordSchema implements Serializable{
 	public List<String> getFieldNames(){
 		ArrayList<String> fieldNames = new ArrayList<String>(fields.size()); 
 		for(RecordField fld : fields){
-			fieldNames.add(fld.name);
+			fieldNames.add(fld.getName());
 		}
 		return fieldNames;
 	}
@@ -32,7 +32,7 @@ public class RecordSchema implements Serializable{
 	int getFieldPos(String fieldName){
 		int pos = -1;
 		for(int i=0;i<fields.size();i++){
-			if(fieldName.equals(fields.get(i).name))
+			if(fieldName.equals(fields.get(i).getName()))
 				return i;
 		}
 		return pos;

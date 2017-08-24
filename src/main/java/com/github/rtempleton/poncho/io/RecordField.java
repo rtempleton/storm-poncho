@@ -19,10 +19,10 @@ import com.github.rtempleton.poncho.io.parsers.TokenParser;
 public class RecordField implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	public String name;
-	public TokenType type;
-	public String format;
-	public String nullVal;
+	private String name;
+	private TokenType type;
+	private String format;
+	private String nullVal;
 	
 	public enum TokenType{
 		STRING, INTEGER, LONG, FLOAT, DOUBLE, DATE, TIME, TIMESTAMP
