@@ -1,13 +1,14 @@
-package com.github.rtempleton.poncho;
+package com.github.rtempleton.poncho.test;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 public abstract class AbstractTestCase {
 	
-    private Logger logger;
+    private Log logger;
     
 
     /**
@@ -15,9 +16,9 @@ public abstract class AbstractTestCase {
      * 
      * @return the logger for this test
      */
-    protected Logger getLogger() {
+    protected Log getLogger() {
         if (this.logger == null)
-            this.logger = Logger.getLogger(this.getClass().getName());
+            this.logger = LogFactory.getLog(this.getClass().getName());
         return this.logger;
     }
 

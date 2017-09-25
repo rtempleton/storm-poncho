@@ -32,7 +32,7 @@ public class SimpleHDFSWriter extends HdfsBolt{
 	 * <p>
 	 * If your topology contains more than one implementation of this bolt, it's properties can be uniquely defined by preprending the above property name with the writerName value provided in this constructor.<br>
 	 * Exmaple: If you have two implementations of this bolt, one that writes "good" records and another that writes "bad" records
-	 * you would construct this SimpleHDFSWriter with the writerName of "good" and identify it's unique properties as "goodHDFS.fs.defaultFS=..." and "goodHDFS.output.path=..."
+	 * you would construct this SimpleHDFSWriter with the writerName of "good" and identify it's unique properties as "good.HDFS.fs.defaultFS=..." and "good.HDFS.output.path=..."
 	 * 
 	 * @param props - the Properties
 	 * @param writerName - The optional name of this SimpleHDFSWriter.
@@ -40,9 +40,9 @@ public class SimpleHDFSWriter extends HdfsBolt{
 	public SimpleHDFSWriter(Properties props, String writerName) {
 		
 		//In the event there is more than one SimpleHDFSWriter, prepend the writerName value to the required property name to find it's distinct value.  
-		String outputDir = (writerName==null || writerName.isEmpty()) ? StormUtils.getRequiredProperty(props, HDFS_OUTPUT_PATH) : StormUtils.getRequiredProperty(props, writerName + HDFS_OUTPUT_PATH);
+		String outputDir = (writerName==null || writerName.isEmpty()) ? StormUtils.getRequiredProperty(props, HDFS_OUTPUT_PATH) : StormUtils.getRequiredProperty(props, writerName + "." + HDFS_OUTPUT_PATH);
 		FileNameFormat fileNameFormat = new DefaultFileNameFormat().withPath(outputDir);
-		String fsUrl = (writerName==null || writerName.isEmpty()) ? StormUtils.getRequiredProperty(props, HDFS_FILESYS) : StormUtils.getRequiredProperty(props, writerName + HDFS_FILESYS);
+		String fsUrl = (writerName==null || writerName.isEmpty()) ? StormUtils.getRequiredProperty(props, HDFS_FILESYS) : StormUtils.getRequiredProperty(props, writerName + "." + HDFS_FILESYS);
 		
 		//Synchronize data buffer with the filesystem every 5000 tuples
 		SyncPolicy syncPolicy = new CountSyncPolicy(500);

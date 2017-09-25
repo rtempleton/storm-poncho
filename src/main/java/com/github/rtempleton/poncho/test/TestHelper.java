@@ -1,4 +1,4 @@
-package com.github.rtempleton.poncho;
+package com.github.rtempleton.poncho.test;
 
 import java.io.File;
 import java.net.URISyntaxException;

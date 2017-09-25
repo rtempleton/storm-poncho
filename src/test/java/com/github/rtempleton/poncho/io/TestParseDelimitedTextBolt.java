@@ -9,10 +9,9 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.github.rtempleton.poncho.AbstractTestCase;
+import com.github.rtempleton.poncho.test.AbstractTestCase;
 
 public class TestParseDelimitedTextBolt extends AbstractTestCase {
 	
