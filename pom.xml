@@ -48,34 +48,26 @@
   	<dependency>
   		<groupId>org.apache.storm</groupId>
   		<artifactId>storm-core</artifactId>
-  		<version>1.1.0</version>
+  		<version>${StormVersion}</version>
+
+  		<exclusions>
+  			<exclusion>
+  				<groupId>org.slf4j</groupId>
+  				<artifactId>log4j-over-slf4j</artifactId>
+  			</exclusion>
+  		</exclusions>
   		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>org.apache.storm</groupId>
   		<artifactId>storm-hdfs</artifactId>
-  		<version>1.1.0</version>
+  		<version>${StormVersion}</version>
   	</dependency>
   	<dependency>
   		<groupId>org.apache.storm</groupId>
   		<artifactId>storm-kafka</artifactId>
-  		<version>1.1.0</version>
+  		<version>${StormVersion}</version>
   		<exclusions>
-  			<exclusion>
-  				<groupId>org.apache.kafka</groupId>
-  				<artifactId>kafka-clients</artifactId>
-  			</exclusion>
-  		</exclusions>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.kafka</groupId>
-  		<artifactId>kafka_2.11</artifactId>
-  		<version>0.10.1.0</version>
-  		<exclusions>
-  			<exclusion>
-  				<groupId>org.slf4j</groupId>
-  				<artifactId>slf4j-log4j12</artifactId>
-  			</exclusion>
   			<exclusion>
   				<groupId>org.apache.kafka</groupId>
   				<artifactId>kafka-clients</artifactId>
@@ -98,14 +90,20 @@
   		<version>2.12.0</version>
   	</dependency>
   	<dependency>
-  		<groupId>org.apache.kafka</groupId>
-  		<artifactId>kafka-clients</artifactId>
-  		<version>0.10.1.0</version>
-  	</dependency>
-  	<dependency>
   		<groupId>org.apache.phoenix</groupId>
   		<artifactId>phoenix-core</artifactId>
   		<version>${PhoenixVersion}</version>
+  		<exclusions>
+  			<exclusion>
+  				<groupId>org.slf4j</groupId>
+  				<artifactId>slf4j-log4j12</artifactId>
+  			</exclusion>
+  		</exclusions>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.storm</groupId>
+  		<artifactId>storm-kafka-client</artifactId>
+  		<version>${StormVersion}</version>
   	</dependency>
   </dependencies>
 </project>

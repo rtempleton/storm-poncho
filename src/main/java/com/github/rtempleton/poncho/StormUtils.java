@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.kafka.BrokerHosts;
@@ -21,7 +22,7 @@ import org.apache.storm.topology.TopologyBuilder;
 
 public class StormUtils {
 
-	private static final Logger logger = Logger.getLogger(StormUtils.class);
+	private static final Logger logger = LoggerFactory.getLogger(StormUtils.class);
 	
 	
 	public static Properties readProperties(String propsPath){

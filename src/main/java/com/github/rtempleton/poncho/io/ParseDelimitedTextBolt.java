@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
@@ -13,6 +12,8 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.rtempleton.poncho.StormUtils;
 import com.github.rtempleton.poncho.io.parsers.TokenParser;
@@ -20,7 +21,7 @@ import com.github.rtempleton.poncho.io.parsers.TokenParser;
 public class ParseDelimitedTextBolt implements IRichBolt {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(ParseDelimitedTextBolt.class);
+	private static final Logger Log = LoggerFactory.getLogger(ParseDelimitedTextBolt.class);
 	private static final String DEFAULT_DELIMITER = ",";
 	private static final String DEFAULT_CHARSET_VALUE = "UTF-8";
 	
@@ -34,7 +35,9 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 	private final ArrayList<TokenParser> parsers = new ArrayList<TokenParser>();
 	private final List<String> selectedFields;
 	private final String delimiter;
-	private final String charsetName;
+//	private final String charsetName;
+	
+	private int parseField = -1;
 	
 	private OutputCollector collector;
 
@@ -51,12 +54,22 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 	 *  
 	 * @param props - the Properties
 	 */
-	public ParseDelimitedTextBolt(Properties props){
+	public ParseDelimitedTextBolt(Properties props, List<String> inputFields){
+//		this.inputFields = inputFields;
 		String schemaPath = StormUtils.getRequiredProperty(props, SCHEMA_PROPERTY);
 		schema = SchemaUtil.readRecordSchema(schemaPath);
 		delimiter = (props.containsKey(DELIMITER_PROPERTY)) ? props.getProperty(DELIMITER_PROPERTY) : DEFAULT_DELIMITER;
 		selectedFields = (props.containsKey(FILTER_FIELDS)) ? SchemaUtil.parseSelectFields(props.getProperty(FILTER_FIELDS)) : schema.getFieldNames();
-		charsetName = (props.containsKey(DEFAULT_CHARSET_PROPNAME)) ? props.getProperty(DEFAULT_CHARSET_PROPNAME) : DEFAULT_CHARSET_VALUE;
+//		charsetName = (props.containsKey(DEFAULT_CHARSET_PROPNAME)) ? props.getProperty(DEFAULT_CHARSET_PROPNAME) : DEFAULT_CHARSET_VALUE;
+		
+		for(int i=0;i<inputFields.size();i++) {
+			//hardcoding the name of the Kafka field here
+			if(inputFields.get(i).equals("value"));
+			parseField = i;
+		}
+		if (parseField==-1) {
+			Log.error("The parse field was not found in the list of input fields");
+		}
  	}
 
 	public void prepare(@SuppressWarnings("rawtypes") Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -70,7 +83,7 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 				mapping.add(fldPos);
 				parsers.add(schema.fields.get(fldPos).getParser());
 			}else{
-				logger.warn(String.format("Field %s was not found in the record schema, this field will not be included.", fldName));
+				Log.warn(String.format("Field %s was not found in the record schema, this field will not be included.", fldName));
 			}
 		}
 
@@ -81,11 +94,12 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 	 */
 	public void execute(Tuple input) {
 		try{
-			String rec = new String(input.getBinary(0), charsetName);
+			String rec = input.getString(parseField);
+//			String rec = new String(input.getBinary(0), charsetName);
 			collector.emit(doProcess(rec));
 		}catch(Exception e){
 			//TODO - create stream for records that weren't able to be decoded and push bad tuples there for potential inspection
-			logger.error("Parsing Error - Skipping Message");
+			Log.error("Parsing Error - Skipping Message");
 		}
 		collector.ack(input);
 		
@@ -106,8 +120,8 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 			try{
 			vals.add(parsers.get(i).parse(rec[inPos]));
 			}catch(Exception e){
-				logger.error("Parse error source: " + input);
-				logger.error("Parser: " + i);
+				Log.error("Parse error source: " + input);
+				Log.error("Parser: " + i);
 				throw e;
 			}
 		}

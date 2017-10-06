@@ -3,19 +3,22 @@ package com.github.rtempleton.poncho.io;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.rtempleton.poncho.test.AbstractTestCase;
 
 public class TestParseDelimitedTextBolt extends AbstractTestCase {
 	
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(TestParseDelimitedTextBolt.class);
 	
 	private static final String SCHEMA_PROPERTY = "DTS.schema";
@@ -34,7 +37,7 @@ public class TestParseDelimitedTextBolt extends AbstractTestCase {
 		props.put(SCHEMA_PROPERTY, schemaDefinitionPath);
 		props.put(DELIMITER_PROPERTY, delimiter);
 		
-		ParseDelimitedTextBolt b = new ParseDelimitedTextBolt(props);
+		ParseDelimitedTextBolt b = new ParseDelimitedTextBolt(props, Arrays.asList("value"));
 		b.prepare(null, null, null);
 		
 		
@@ -77,7 +80,7 @@ public class TestParseDelimitedTextBolt extends AbstractTestCase {
 		props.put(DELIMITER_PROPERTY, delimiter);
 		props.put(FILTER_FIELDS, filterFields);
 		
-		ParseDelimitedTextBolt b = new ParseDelimitedTextBolt(props);
+		ParseDelimitedTextBolt b = new ParseDelimitedTextBolt(props, Arrays.asList("value"));
 		b.prepare(null, null, null);
 		
 		BufferedReader br = new BufferedReader(new FileReader(testFilePath));

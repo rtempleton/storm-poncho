@@ -4,6 +4,6 @@ import java.io.Serializable;
 
 public interface TokenParser extends Serializable{
 	
-	public Object parse(String token);
+	public Object parse(Object token);
 	
 }

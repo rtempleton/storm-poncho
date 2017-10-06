@@ -22,7 +22,7 @@ public class RecordField implements Serializable{
 	private String name;
 	private TokenType type;
 	private String format;
-	private String nullVal;
+	private Object nullVal;
 	
 	public enum TokenType{
 		STRING, INTEGER, LONG, FLOAT, DOUBLE, DATE, TIME, TIMESTAMP
@@ -50,7 +50,7 @@ public class RecordField implements Serializable{
 	}
 	
 	
-	private static TokenParser createParser(String name, TokenType type, String format, String nullVal){
+	private static TokenParser createParser(String name, TokenType type, String format, Object nullVal){
 		switch (type){
 		
 		case STRING :
@@ -104,7 +104,7 @@ public class RecordField implements Serializable{
 		this.format = format;
 	}
 	
-	public String getNullVal(){
+	public Object getNullVal(){
 		return this.nullVal;
 	}
 	

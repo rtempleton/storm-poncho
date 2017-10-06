@@ -8,13 +8,14 @@ import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class TextFileProducer {
 	
 	private KafkaProducer<String, String> producer;
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(TextFileProducer.class);
 
 	private final String sourceFile;

@@ -1,14 +1,15 @@
 package com.github.rtempleton.poncho.io.parsers;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LongParser implements TokenParser {
+public class ShortParser implements TokenParser {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(LongParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(ShortParser.class);
 	private final DecimalFormat df;
 	private final String name;
 	private final Object nullValue;
@@ -17,12 +18,12 @@ public class LongParser implements TokenParser {
 	 * 
 	 * @param decimalFormat - An optional {@link DecimalFormat} pattern
 	 */
-	public LongParser(String name, String decimalFormat, Object nullVal) {
+	public ShortParser(String name, String decimalFormat, Object nullVal) {
 		this.name=name;
 		df = (decimalFormat==null || decimalFormat.isEmpty()) ? new DecimalFormat() : new DecimalFormat(decimalFormat);
 		if(nullVal == null)
 			nullValue = null;
-		else if (!(nullVal instanceof java.lang.Long))
+		else if (!(nullVal instanceof java.lang.Short))
 			nullValue = parse(nullVal);
 		else
 			nullValue = nullVal;
@@ -35,11 +36,11 @@ public class LongParser implements TokenParser {
 			return nullValue;
 		
 		try{
-			if (!(token instanceof java.lang.Long)) {
+			if (!(token instanceof java.lang.Short)) {
 				String t = token.toString();
 				if(t.trim().length()==0)
 					return nullValue;
-				return (Long)df.parse(t.trim()).longValue();
+				return (Short)df.parse(t.trim()).shortValue();
 			}else {
 				return token;
 			}

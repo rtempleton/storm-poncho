@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SchemaUtil {
 	
-	private static final Logger logger = Logger.getLogger(SchemaUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(SchemaUtil.class);
 	
 	
 	public static RecordSchema readRecordSchema(String schemaPath){
@@ -48,6 +49,9 @@ public class SchemaUtil {
 		}
 		return fields;
 	}
+	
+	
+	
 	
 	
 

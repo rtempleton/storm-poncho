@@ -1,15 +1,15 @@
 package com.github.rtempleton.poncho.io.parsers;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LongParser implements TokenParser {
+public class BigDecimalParser implements TokenParser {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(LongParser.class);
-	private final DecimalFormat df;
+	private static final Logger logger = LoggerFactory.getLogger(BigDecimalParser.class);
 	private final String name;
 	private final Object nullValue;
 	
@@ -17,12 +17,11 @@ public class LongParser implements TokenParser {
 	 * 
 	 * @param decimalFormat - An optional {@link DecimalFormat} pattern
 	 */
-	public LongParser(String name, String decimalFormat, Object nullVal) {
+	public BigDecimalParser(String name, Object nullVal) {
 		this.name=name;
-		df = (decimalFormat==null || decimalFormat.isEmpty()) ? new DecimalFormat() : new DecimalFormat(decimalFormat);
 		if(nullVal == null)
 			nullValue = null;
-		else if (!(nullVal instanceof java.lang.Long))
+		else if (!(nullVal instanceof java.math.BigDecimal))
 			nullValue = parse(nullVal);
 		else
 			nullValue = nullVal;
@@ -35,11 +34,11 @@ public class LongParser implements TokenParser {
 			return nullValue;
 		
 		try{
-			if (!(token instanceof java.lang.Long)) {
+			if (!(token instanceof java.math.BigDecimal)) {
 				String t = token.toString();
 				if(t.trim().length()==0)
 					return nullValue;
-				return (Long)df.parse(t.trim()).longValue();
+				return new BigDecimal(t);
 			}else {
 				return token;
 			}

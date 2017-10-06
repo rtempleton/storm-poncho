@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -14,7 +15,7 @@ import com.github.rtempleton.poncho.io.RecordField.TokenType;
 
 public class SchemaGenerator {
 	
-	private static final Logger logger = Logger.getLogger(SchemaGenerator.class);
+	private static final Logger logger = LoggerFactory.getLogger(SchemaGenerator.class);
 
 	public static void main(String[] args) {
 		if (args.length < 2){

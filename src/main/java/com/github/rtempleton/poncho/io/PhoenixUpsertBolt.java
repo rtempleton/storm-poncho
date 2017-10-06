@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.rtempleton.poncho.StormUtils;
+import com.github.rtempleton.poncho.io.parsers.TokenParser;
 
 /**
  * 
@@ -50,7 +51,9 @@ public class PhoenixUpsertBolt implements IRichBolt {
 	
 	private Connection con = null;
 	private String upsertStmt = "";
-	private final ArrayList<String> cols = new ArrayList<String>();
+	private final ArrayList<TableCol> tableCols = new ArrayList<TableCol>();
+	
+	private int[] map;
 	
 	private OutputCollector collector;
 
@@ -102,12 +105,20 @@ public class PhoenixUpsertBolt implements IRichBolt {
 			con.setAutoCommit(false);
 			PreparedStatement stmt = con.prepareStatement(upsertStmt);
 			
-			//iteratore over the tuples in the cache mapping the fieldNames to the column names in the table
+			//iterate over the tuples in the cache mapping the fieldNames to the column names in the table
 			for (Tuple input : cache){
 				int i=1;
 				stmt.clearParameters();
-				for(String key : cols) {
-					stmt.setObject(i++, input.getValueByField(key));
+				for(TableCol col : tableCols) {
+//					Object obj = col.parser.parse(input.getValueByField(col.name));
+					//use the positions of the mapped inputs
+					Object obj = col.parser.parse(input.getValue(map[i-1]));
+//					Log.info(i + " " + col.name + " " + col.sqlType + " " + obj.getClass().getName() + " " + obj.toString());
+					if(obj==null || obj.equals(java.sql.Types.NULL))
+						stmt.setNull(i++, col.sqlType);
+					else
+						stmt.setObject(i++, obj);
+					
 				}
 				stmt.addBatch();
 			}
@@ -125,6 +136,8 @@ public class PhoenixUpsertBolt implements IRichBolt {
 		}catch(SQLException e) {
 			//if there's an exception, dump the cache conectents into the "failed" output stream
 			Log.error("Error UPSERTING batch of " + cache.size() + " records. " + e.getMessage());
+			e.printStackTrace(System.out);
+			
 			for(Tuple input : cache) {
 				collector.emit("failed", input.getValues());
 			}
@@ -152,8 +165,11 @@ public class PhoenixUpsertBolt implements IRichBolt {
 			stmt = con.prepareStatement(mdQuery);
 			rset = stmt.executeQuery();
 			ResultSetMetaData meta = rset.getMetaData();
+			
 			for (int i=1; i<meta.getColumnCount()+1; i++) {
-				cols.add(meta.getColumnName(i));
+				//prune table columns to align to incoming tuple fields
+				if(inputFields.contains(meta.getColumnName(i)))
+					tableCols.add(new TableCol(meta.getColumnName(i), meta.getColumnTypeName(i)));
 			}
 		} catch (SQLException e) {
 			Log.error("Error retrieving table meta data: " + e.getMessage());
@@ -168,16 +184,34 @@ public class PhoenixUpsertBolt implements IRichBolt {
 			}
 		}
 		
+
+		//optimize the mapping from source to target fields using ordinals
+		map = new int[tableCols.size()];
+		for(int i=0;i<tableCols.size();i++) {
+			for(int x=0;x<inputFields.size();x++) {
+				if(inputFields.get(x).equals(tableCols.get(i).name))
+					map[i]=x;
+			}
+		}
+		
+		
 		//create the upsert statement for this table
 		StringBuffer buf = new StringBuffer();
-		buf.append("upsert into " +  table.toUpperCase() + " values (");
-		for(int i=0;i<cols.size();i++) {
+		buf.append("upsert into " +  table.toUpperCase() + "(");
+		for(TableCol col : tableCols) {
+			buf.append(col.name + ",");
+		}
+		//drop the last comma from the names list
+		buf.deleteCharAt(buf.length()-1);
+		buf.append(") values (");
+		for(int i=0;i<tableCols.size();i++) {
 			buf.append("?,");
 			}
 		//drop the last comma from the params list
 		buf.deleteCharAt(buf.length()-1);
 		buf.append(")");
 		upsertStmt = buf.toString();
+//		Log.info(upsertStmt);
 	}
 
 	/*
@@ -197,6 +231,18 @@ public class PhoenixUpsertBolt implements IRichBolt {
 	    Config conf = new Config();
 	    conf.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, TICK_TUPLE_SECS);
 	    return conf;
+	}
+	
+	private class TableCol{
+		private final String name;
+		private final int sqlType;
+		private final TokenParser parser;
+		
+		public TableCol(String name, String jdbcType) {
+			this.name = name;
+			this.sqlType = JDBCUtil.getSqlType(jdbcType);
+			this.parser = JDBCUtil.getJDBCTokenParser(jdbcType, name);
+		}
 	}
 
 }

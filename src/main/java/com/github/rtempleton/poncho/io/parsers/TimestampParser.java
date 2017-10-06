@@ -1,6 +1,11 @@
 package com.github.rtempleton.poncho.io.parsers;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.Timestamp;
+
+import org.joda.time.DateTime;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -8,36 +13,47 @@ import org.joda.time.format.DateTimeFormatter;
 public class TimestampParser implements TokenParser {
 	
 	private static final long serialVersionUID = 1L;
-	private final static Logger logger = Logger.getLogger(TimestampParser.class);
+	private final static Logger logger = LoggerFactory.getLogger(TimestampParser.class);
 	private final static String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	private final DateTimeFormatter dtf;
 	private final String name;
 	private Object nullValue;
 	
-	public TimestampParser(String name, String simpleDateFormat, String nullVal) {
+	public TimestampParser(String name, String simpleDateFormat, Object nullVal) {
+		this.name=name;
 		String format = (simpleDateFormat==null || simpleDateFormat.isEmpty()) ? DEFAULT_FORMAT : simpleDateFormat;
 		dtf = DateTimeFormat.forPattern(format).withOffsetParsed().withPivotYear(2000).withChronology(ISOChronology.getInstance());
-		this.name=name;
-		try {
-			nullValue = (nullVal == null || nullVal.isEmpty()) ? null : dtf.parseDateTime(nullVal.trim());
-		} catch (Exception e) {
+		
+		if(nullVal == null)
 			nullValue = null;
-		}
+		else if (!(nullVal instanceof java.sql.Timestamp))
+			nullValue = parse(nullVal);
+		else
+			nullValue = nullVal;
 		
 	}
 
-	public Object parse(String token) {
-		if(token.length()>0){
-			try{
-				if(token.trim().length()==0)
+	public Object parse(Object token) {
+		
+		if(token==null)
+			return nullValue;
+		
+		try{
+			if (!(token instanceof java.sql.Timestamp)) {
+				String t=token.toString();
+				if(t.trim().length()==0)
 					return nullValue;
-				return dtf.parseDateTime(token.trim());
-			}catch(Exception e){
-				logger.debug(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
-				return nullValue;
+				DateTime dt = dtf.parseDateTime(t.trim());
+				return new Timestamp(dt.getMillis());
+			}else {
+				return token;
 			}
+		}catch(Exception e){
+			logger.debug(String.format("Error parsing token %s at field %s. Pushing %s instead.", token, name, nullValue));
+			return nullValue;
 		}
-		return null;
+		
+
 	}
 
 }

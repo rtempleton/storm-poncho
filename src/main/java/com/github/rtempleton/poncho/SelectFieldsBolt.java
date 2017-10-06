@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
@@ -16,7 +17,7 @@ import org.apache.storm.tuple.Tuple;
 public class SelectFieldsBolt implements IRichBolt {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(SelectFieldsBolt.class);
+	private static final Logger logger = LoggerFactory.getLogger(SelectFieldsBolt.class);
 	private List<String> outputFields;
 	private OutputCollector collector;
 	private int[] inputPositions;
