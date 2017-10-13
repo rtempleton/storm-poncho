@@ -1,5 +1,6 @@
 package com.github.rtempleton.poncho.io;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.storm.Config;
 import org.apache.storm.Constants;
 import org.apache.storm.task.OutputCollector;
@@ -46,6 +48,9 @@ public class PhoenixUpsertBolt implements IRichBolt {
 	private final List<String> inputFields;
 	private final long TICK_TUPLE_SECS;
 	private final int BATCH_SIZE;
+	
+	private final String KRB5LOCATION, PRINCIPAL, KEYTAB;
+	
 	private final String table;
 	private final String jdbcurl;
 	private final ArrayList<Tuple> cache;
@@ -64,6 +69,11 @@ public class PhoenixUpsertBolt implements IRichBolt {
 		table = StormUtils.getRequiredProperty(props, boltName + ".table");
 		TICK_TUPLE_SECS = (props.getProperty("phoenix.writerFlushFreqSecs")!=null)?Long.parseLong(props.getProperty("phoenix.writerFlushFreqSecs")):10l;
 		BATCH_SIZE = (props.getProperty("phoenix.flushBatchSize")!=null)?Integer.parseInt(props.getProperty("phoenix.flushBatchSize")):300;
+		
+		KRB5LOCATION = (props.getProperty("security.krb5location")!=null)?props.getProperty("security.krb5location"):"/etc/krb5.conf";
+		PRINCIPAL = (props.getProperty("security.principal")!=null)?props.getProperty("security.principal"):null;
+		KEYTAB = (props.getProperty("security.keytab")!=null)?props.getProperty("security.keytab"):null;
+		
 		cache = new ArrayList<Tuple>(BATCH_SIZE);
 	}
 
@@ -102,6 +112,8 @@ public class PhoenixUpsertBolt implements IRichBolt {
 	
 	private void flushCache(){
 		try{
+			//Do we need to authenticate before each con or is this sufficiently handled once in Prepare?
+			authenticate();
 			con = DriverManager.getConnection(jdbcurl);
 			con.setAutoCommit(false);
 			PreparedStatement stmt = con.prepareStatement(upsertStmt);
@@ -133,7 +145,14 @@ public class PhoenixUpsertBolt implements IRichBolt {
 			for(Tuple input : cache) {
 				collector.emit(input.getValues());
 			}
+		
+		} catch (IOException e) {
+			Log.error("Error authenticating: " + e.getMessage());
+			e.printStackTrace(System.out);
 			
+			for(Tuple input : cache) {
+				collector.emit("failed", input.getValues());
+			}
 		}catch(SQLException e) {
 			//if there's an exception, dump the cache conectents into the "failed" output stream
 			Log.error("Error UPSERTING batch of " + cache.size() + " records. " + e.getMessage());
@@ -162,6 +181,7 @@ public class PhoenixUpsertBolt implements IRichBolt {
 		
 		//cache the table metadata
 		try {
+			authenticate();
 			con = DriverManager.getConnection(jdbcurl);
 			stmt = con.prepareStatement(mdQuery);
 			rset = stmt.executeQuery();
@@ -172,6 +192,9 @@ public class PhoenixUpsertBolt implements IRichBolt {
 				if(inputFields.contains(meta.getColumnName(i)))
 					tableCols.add(new TableCol(meta.getColumnName(i), meta.getColumnTypeName(i)));
 			}
+		} catch (IOException e) {
+			Log.error("Error authenticating: " + e.getMessage());
+			System.exit(-1);
 		} catch (SQLException e) {
 			Log.error("Error retrieving table meta data: " + e.getMessage());
 			System.exit(-1);
@@ -232,6 +255,14 @@ public class PhoenixUpsertBolt implements IRichBolt {
 	    Config conf = new Config();
 	    conf.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, TICK_TUPLE_SECS);
 	    return conf;
+	}
+	
+	private void authenticate() throws IOException {
+		
+		if(KEYTAB!=null && PRINCIPAL!=null) {
+            System.setProperty("java.security.krb5.conf", KRB5LOCATION);
+            UserGroupInformation.loginUserFromKeytab(PRINCIPAL, KEYTAB);
+		}
 	}
 	
 	private class TableCol{

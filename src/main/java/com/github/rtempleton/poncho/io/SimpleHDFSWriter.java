@@ -56,8 +56,8 @@ public class SimpleHDFSWriter extends HdfsBolt{
 		        .withFileNameFormat(fileNameFormat)
 		        .withRotationPolicy(rotationPolicy)
 		        .withRecordFormat(format)
-		        .withSyncPolicy(syncPolicy);
-		
+		        .withSyncPolicy(syncPolicy)
+		        .withConfigKey("hdfs.config");
 	}
 
 }
