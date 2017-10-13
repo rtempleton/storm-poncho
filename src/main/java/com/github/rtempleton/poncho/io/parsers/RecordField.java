@@ -1,19 +1,9 @@
-package com.github.rtempleton.poncho.io;
+package com.github.rtempleton.poncho.io.parsers;
 
 import java.io.Serializable;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
-
-import com.github.rtempleton.poncho.io.parsers.DateParser;
-import com.github.rtempleton.poncho.io.parsers.DoubleParser;
-import com.github.rtempleton.poncho.io.parsers.FloatParser;
-import com.github.rtempleton.poncho.io.parsers.IntParser;
-import com.github.rtempleton.poncho.io.parsers.LongParser;
-import com.github.rtempleton.poncho.io.parsers.StringParser;
-import com.github.rtempleton.poncho.io.parsers.TimeParser;
-import com.github.rtempleton.poncho.io.parsers.TimestampParser;
-import com.github.rtempleton.poncho.io.parsers.TokenParser;
 
 @JsonPropertyOrder({ "name", "type", "format", "nullVal" })
 public class RecordField implements Serializable{
@@ -33,7 +23,7 @@ public class RecordField implements Serializable{
 	 * @param name
 	 * @param type
 	 */
-	protected RecordField(String name, TokenType type, String format, String nullVal){
+	public RecordField(String name, TokenType type, String format, String nullVal){
 		this.name=name;
 		this.type=type;
 		this.format=format;

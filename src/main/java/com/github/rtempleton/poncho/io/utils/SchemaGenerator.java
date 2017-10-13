@@ -1,4 +1,4 @@
-package com.github.rtempleton.poncho.io;
+package com.github.rtempleton.poncho.io.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,11 +7,13 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.rtempleton.poncho.io.parsers.RecordField;
+import com.github.rtempleton.poncho.io.parsers.RecordField.TokenType;
+
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-
-import com.github.rtempleton.poncho.io.RecordField.TokenType;
 
 public class SchemaGenerator {
 	

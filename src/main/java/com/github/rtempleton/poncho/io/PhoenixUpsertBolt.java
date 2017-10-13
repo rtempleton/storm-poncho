@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.rtempleton.poncho.StormUtils;
 import com.github.rtempleton.poncho.io.parsers.TokenParser;
+import com.github.rtempleton.poncho.io.utils.JDBCUtil;
 
 /**
  * 

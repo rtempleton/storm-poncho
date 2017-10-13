@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SelectFieldsBolt implements IRichBolt {
 	
@@ -66,7 +66,7 @@ public class SelectFieldsBolt implements IRichBolt {
 		}
 	}
 
-	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+	public void prepare(@SuppressWarnings("rawtypes") Map stormConf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
 	}
 

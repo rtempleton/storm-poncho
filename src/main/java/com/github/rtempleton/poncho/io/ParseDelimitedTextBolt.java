@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.rtempleton.poncho.StormUtils;
+import com.github.rtempleton.poncho.io.parsers.RecordSchema;
 import com.github.rtempleton.poncho.io.parsers.TokenParser;
+import com.github.rtempleton.poncho.io.utils.SchemaUtil;
 
 public class ParseDelimitedTextBolt implements IRichBolt {
 
@@ -81,7 +83,7 @@ public class ParseDelimitedTextBolt implements IRichBolt {
 			int fldPos = schema.getFieldPos(fldName);
 			if(fldPos >-1){
 				mapping.add(fldPos);
-				parsers.add(schema.fields.get(fldPos).getParser());
+				parsers.add(schema.getFields().get(fldPos).getParser());
 			}else{
 				Log.warn(String.format("Field %s was not found in the record schema, this field will not be included.", fldName));
 			}

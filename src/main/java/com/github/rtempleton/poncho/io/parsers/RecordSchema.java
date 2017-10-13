@@ -1,4 +1,4 @@
-package com.github.rtempleton.poncho.io;
+package com.github.rtempleton.poncho.io.parsers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class RecordSchema implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(RecordSchema.class);
 	
-	final List<RecordField> fields;
+	private final List<RecordField> fields;
 	
 	public RecordSchema(List<RecordField> fields){
 		this.fields = fields;
@@ -20,6 +20,10 @@ public class RecordSchema implements Serializable{
 	
 	public int getFieldCount(){
 		return fields.size();
+	}
+	
+	public List<RecordField> getFields(){
+		return this.fields;
 	}
 	
 	public List<String> getFieldNames(){
@@ -30,7 +34,7 @@ public class RecordSchema implements Serializable{
 		return fieldNames;
 	}
 	
-	int getFieldPos(String fieldName){
+	public int getFieldPos(String fieldName){
 		int pos = -1;
 		for(int i=0;i<fields.size();i++){
 			if(fieldName.equals(fields.get(i).getName()))

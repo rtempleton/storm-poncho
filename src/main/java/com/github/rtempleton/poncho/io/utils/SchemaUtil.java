@@ -1,4 +1,4 @@
-package com.github.rtempleton.poncho.io;
+package com.github.rtempleton.poncho.io.utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,6 +10,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.rtempleton.poncho.io.parsers.RecordField;
+import com.github.rtempleton.poncho.io.parsers.RecordSchema;
 
 public class SchemaUtil {
 	
